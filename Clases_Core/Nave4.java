@@ -16,6 +16,7 @@ public class Nave4 {
     private int vidas = 3;
     private float xVel = 0;
     private float yVel = 0;
+    private float rotationDeg = 0f;
     private Sprite spr;
     private Sound sonidoHerido;
     private Sound soundBala;
@@ -32,6 +33,7 @@ public class Nave4 {
     	spr.setPosition(x, y);
     	//spr.setOriginCenter();
     	spr.setBounds(x, y, 45, 45);
+    	spr.setOriginCenter();   
 
     }
     public void draw(SpriteBatch batch, PantallaJuego juego){
@@ -45,6 +47,11 @@ public class Nave4 {
         	if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) xVel =  3;
         	if (Gdx.input.isKeyPressed(Input.Keys.DOWN))  yVel = -3;
         	if (Gdx.input.isKeyPressed(Input.Keys.UP))    yVel =  3;
+        	
+        	if (xVel != 0 || yVel != 0) {
+        	    rotationDeg = MathUtils.atan2(yVel, xVel) * MathUtils.radiansToDegrees - 90f;
+        	}
+        	spr.setRotation(rotationDeg);
         	
 	     /*   if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) spr.setRotation(++rotacion);
 	        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) spr.setRotation(--rotacion);
@@ -77,13 +84,63 @@ public class Nave4 {
  		   if (tiempoHerido<=0) herido = false;
  		 }
         // disparo
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {         
-          Bullet  bala = new Bullet(spr.getX()+spr.getWidth()/2-5,spr.getY()+ spr.getHeight()-5,0,3,txBala);
-	      juego.agregarBala(bala);
-	      soundBala.play();
+     // disparo
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            int bulletSpeed = 5;
+
+            // Dirección del disparo: misma que usas para mover/rotar (nave mira hacia arriba, así que +90° aquí)
+            float dir = rotationDeg + 90f;
+
+            // Velocidad de la bala a partir del ángulo
+            int vx = MathUtils.round(bulletSpeed * MathUtils.cosDeg(dir));
+            int vy = MathUtils.round(bulletSpeed * MathUtils.sinDeg(dir));
+
+            // Punto EXACTO de la punta de la nave
+            float tipX = getNoseX();
+            float tipY = getNoseY();
+
+            // Respetamos tu firma del constructor:
+            Bullet bala = new Bullet(
+                tipX,                 // x inicial (aprox; lo ajustamos al centro dentro de orientAt)
+                tipY,                 // y inicial
+                vx, vy,
+                txBala
+            );
+
+            // Ahora sí: giramos la textura de la bala y la centramos en la punta
+            bala.orientAt(tipX, tipY, dir);
+
+            juego.agregarBala(bala);
+            soundBala.play();
         }
-       
+
     }
+    
+    private float getNoseX() {
+        float cx = spr.getX() + spr.getWidth()  / 2f;  // centro de la nave
+        float cy = spr.getY() + spr.getHeight() / 2f;
+        float halfH = spr.getHeight() / 2f;            // vector punta: (0, halfH) en espacio local
+
+        float rad = rotationDeg * MathUtils.degreesToRadians;
+        // Rotamos (0, halfH) por rotationDeg:
+        float offX = -halfH * MathUtils.sin(rad);
+        float offY =  halfH * MathUtils.cos(rad);
+
+        return cx + offX;
+    }
+      
+    private float getNoseY() {
+        float cx = spr.getX() + spr.getWidth()  / 2f;
+        float cy = spr.getY() + spr.getHeight() / 2f;
+        float halfH = spr.getHeight() / 2f;
+
+        float rad = rotationDeg * MathUtils.degreesToRadians;
+        float offX = -halfH * MathUtils.sin(rad);
+        float offY =  halfH * MathUtils.cos(rad);
+
+        return cy + offY;
+    }
+   
       
     public boolean checkCollision(Ball2 b) {
         if(!herido && b.getArea().overlaps(spr.getBoundingRectangle())){
