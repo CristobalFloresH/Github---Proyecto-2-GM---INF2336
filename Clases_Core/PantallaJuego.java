@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import puppy.code.PowerUpSpeed;
 
 
 public class PantallaJuego implements Screen {
@@ -26,11 +27,16 @@ public class PantallaJuego implements Screen {
 	private int velYAsteroides; 
 	private int cantAsteroides;
 	
+	
+	//nuevo
+	private PowerUpSpeed powerUp;	
+	private Texture fondo;
+
+	
 	private Nave4 nave;
 	private  ArrayList<Ball2> balls1 = new ArrayList<>();
 	private  ArrayList<Ball2> balls2 = new ArrayList<>();
 	private  ArrayList<Bullet> balas = new ArrayList<>();
-
 
 	public PantallaJuego(SpaceNavigation game, int ronda, int vidas, int score,  
 			int velXAsteroides, int velYAsteroides, int cantAsteroides) {
@@ -44,6 +50,8 @@ public class PantallaJuego implements Screen {
 		batch = game.getBatch();
 		camera = new OrthographicCamera();	
 		camera.setToOrtho(false, 800, 640);
+		
+		fondo = new Texture(Gdx.files.internal("fondo.png"));
 		//inicializar assets; musica de fondo y efectos de sonido
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1,0.5f);
@@ -69,6 +77,7 @@ public class PantallaJuego implements Screen {
 	  	    balls1.add(bb);
 	  	    balls2.add(bb);
 	  	}
+	    powerUp = new PowerUpSpeed();
 	}
     
 	public void dibujaEncabezado() {
@@ -82,6 +91,7 @@ public class PantallaJuego implements Screen {
 	public void render(float delta) {
 		  Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
           batch.begin();
+          batch.draw(fondo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		  dibujaEncabezado();
 	      if (!nave.estaHerido()) {
 		      // colisiones entre balas y asteroides y su destruccion  
@@ -146,6 +156,16 @@ public class PantallaJuego implements Screen {
   			game.setScreen(ss);
   			dispose();
   		  }
+	      if (powerUp != null && powerUp.isActivo()) {
+	          powerUp.update();
+	          powerUp.render(batch);
+
+	          // Detección de colisión con la nave
+	          if (powerUp.getHitbox().overlaps(nave.getSprite().getBoundingRectangle())) {
+	              powerUp.aplicarEfecto(nave);
+	          }
+	      }
+	      
 	      batch.end();
 	      //nivel completado
 	      if (balls1.size()==0) {
