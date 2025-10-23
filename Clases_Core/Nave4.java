@@ -25,6 +25,8 @@ public class Nave4 {
     private int tiempoHeridoMax=50;
     private int tiempoHerido;
     
+    private float velocidadBase = 2f;
+    
     public Nave4(int x, int y, Texture tx, Sound soundChoque, Texture txBala, Sound soundBala) {
     	sonidoHerido = soundChoque;
     	this.soundBala = soundBala;
@@ -40,13 +42,14 @@ public class Nave4 {
         float x =  spr.getX();
         float y =  spr.getY();
         if (!herido) {
+        	
 	        // que se mueva con teclado
         	xVel = 0;
         	yVel = 0;
-        	if (Gdx.input.isKeyPressed(Input.Keys.LEFT))  xVel = -3;
-        	if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) xVel =  3;
-        	if (Gdx.input.isKeyPressed(Input.Keys.DOWN))  yVel = -3;
-        	if (Gdx.input.isKeyPressed(Input.Keys.UP))    yVel =  3;
+        	if (Gdx.input.isKeyPressed(Input.Keys.LEFT))  xVel = -velocidadBase;
+        	if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) xVel =  velocidadBase;
+        	if (Gdx.input.isKeyPressed(Input.Keys.DOWN))  yVel = -velocidadBase;
+        	if (Gdx.input.isKeyPressed(Input.Keys.UP))    yVel =  velocidadBase;
         	
         	if (xVel != 0 || yVel != 0) {
         	    rotationDeg = MathUtils.atan2(yVel, xVel) * MathUtils.radiansToDegrees - 90f;
@@ -183,4 +186,28 @@ public class Nave4 {
     public int getX() {return (int) spr.getX();}
     public int getY() {return (int) spr.getY();}
 	public void setVidas(int vidas2) {vidas = vidas2;}
+	
+
+    public void aumentarVelocidad() {
+    	velocidadBase *= 2;  
+    }
+
+
+    public void cambiarModelo(String rutaNuevaTextura) {
+        Texture nuevaTextura = new Texture(Gdx.files.internal(rutaNuevaTextura));
+        spr.setTexture(nuevaTextura);
+    }
+
+    /* Restaura el modelo original
+    public void restaurarModelo() {
+        Texture normal = new Texture(Gdx.files.internal("MainShip3.png"));
+        spr.setTexture(normal);
+    } */
+    
+    public Sprite getSprite() {
+        return spr;
+    }
+    
+    
+	
 }
