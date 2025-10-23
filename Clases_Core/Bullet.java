@@ -45,9 +45,9 @@ public class Bullet {
 	    }
 	    
 	    public void orientAt(float tipX, float tipY, float angleDeg) {
-	        spr.setOriginCenter();                  // rota desde el centro
-	        spr.setRotation(angleDeg- 90f);              // orientación visual de la bala
-	        spr.setPosition(                       // centra la textura en la punta
+	        spr.setOriginCenter();                  
+	        spr.setRotation(angleDeg- 90f);            
+	        spr.setPosition(                      
 	            tipX - spr.getWidth()  / 2f,
 	            tipY - spr.getHeight() / 2f
 	        );
