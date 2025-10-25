@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import puppy.code.PowerUpSpeed;
+
 
 
 public class PantallaJuego implements Screen {
@@ -28,9 +28,19 @@ public class PantallaJuego implements Screen {
 	private int cantAsteroides;
 	
 	
-	//nuevo
-	private PowerUpSpeed powerUp;	
+	//NUEVO
+	private PowerUpSpeed powerUpSpeed;
+	private PowerUpTripleDisparo powerUpTripleDisparo;
+	private PowerUpEscudo powerUpEscudo;	
 	private Texture fondo;
+	// CONTROL DE SPAWN DE POWERUPS
+	private float tiempoSpawnPowerUp = 0;
+	private float siguienteSpawn = 0;
+	private final float TIEMPO_MIN_ENTRE_SPAWN = 3f; 
+	private final float TIEMPO_MAX_ENTRE_SPAWN = 6f; 
+	private Random randomSpawn = new Random();
+
+	
 
 	
 	private Nave4 nave;
@@ -70,14 +80,19 @@ public class PantallaJuego implements Screen {
         //crear asteroides
         Random r = new Random();
 	    for (int i = 0; i < cantAsteroides; i++) {
-	        Ball2 bb = new Ball2(r.nextInt((int)Gdx.graphics.getWidth()),
+	        Ball2 bb = new Ball2(r.nextInt((int)Gdx.graphics.getWidth()),	 
 	  	            50+r.nextInt((int)Gdx.graphics.getHeight()-50),
-	  	            20+r.nextInt(10), velXAsteroides+r.nextInt(4), velYAsteroides+r.nextInt(4), 
+	  	            20+r.nextInt(10), velXAsteroides+r.nextInt(2), velYAsteroides+r.nextInt(2), 
 	  	            new Texture(Gdx.files.internal("aGreyMedium4.png")));	   
 	  	    balls1.add(bb);
 	  	    balls2.add(bb);
 	  	}
-	    powerUp = new PowerUpSpeed();
+	    //NUEVO
+	    powerUpSpeed = new PowerUpSpeed();
+	    powerUpTripleDisparo= new PowerUpTripleDisparo();
+	    powerUpEscudo= new PowerUpEscudo();
+	    siguienteSpawn = randomSpawn.nextFloat() * (TIEMPO_MAX_ENTRE_SPAWN - TIEMPO_MIN_ENTRE_SPAWN) + TIEMPO_MIN_ENTRE_SPAWN;
+
 	}
     
 	public void dibujaEncabezado() {
@@ -90,6 +105,13 @@ public class PantallaJuego implements Screen {
 	@Override
 	public void render(float delta) {
 		  Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		  tiempoSpawnPowerUp += delta;
+		  if (tiempoSpawnPowerUp >= siguienteSpawn) {
+			  spawnNuevoPowerUp();
+			  tiempoSpawnPowerUp = 0;
+			  siguienteSpawn = randomSpawn.nextFloat() * (TIEMPO_MAX_ENTRE_SPAWN - TIEMPO_MIN_ENTRE_SPAWN) + TIEMPO_MIN_ENTRE_SPAWN;
+		  	}
+
           batch.begin();
           batch.draw(fondo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		  dibujaEncabezado();
@@ -135,6 +157,8 @@ public class PantallaJuego implements Screen {
 	          b.draw(batch);
 	      }
 	      nave.draw(batch, this);
+	      nave.actualizarEscudo();
+
 	      //dibujar asteroides y manejar colision con nave
 	      for (int i = 0; i < balls1.size(); i++) {
 	    	    Ball2 b=balls1.get(i);
@@ -156,28 +180,58 @@ public class PantallaJuego implements Screen {
   			game.setScreen(ss);
   			dispose();
   		  }
-	      if (powerUp != null) {
-	    	    if (powerUp.isActivo()) {
-	    	        powerUp.update();
-	    	        powerUp.render(batch);
+	      
+	      //POWER UPS
+	      if (powerUpTripleDisparo != null) {   	    	  
+	    	    if (powerUpTripleDisparo.isActivo()) {
+	    	    	powerUpTripleDisparo.update();
+	    	    	powerUpTripleDisparo.render(batch);
 
-	    	        if (powerUp.getHitbox().overlaps(nave.getSprite().getBoundingRectangle())) {
-	    	            powerUp.aplicarEfecto(nave);
-	    	            powerUp.desactivar();
+	    	        if (powerUpTripleDisparo.getHitbox().overlaps(nave.getSprite().getBoundingRectangle())) {
+	    	        	powerUpTripleDisparo.aplicarEfecto(nave);
+	    	        	powerUpTripleDisparo.desactivar();
 	    	        }
 	    	    }
 	    	}
+	      
+	      if (powerUpSpeed != null) {
+	    	    if (powerUpSpeed.isActivo()) {	    	 	    	 
+	    	    	powerUpSpeed.update();
+	    	    	powerUpSpeed.render(batch);
+
+	    	        if (powerUpSpeed.getHitbox().overlaps(nave.getSprite().getBoundingRectangle())) {
+	    	        	powerUpSpeed.aplicarEfecto(nave);
+	    	        	powerUpSpeed.desactivar();
+	    	        }
+	    	    }
+	    	}
+	      
+	      if (powerUpEscudo != null) {
+	    	    if (powerUpEscudo.isActivo()) {
+	    	        powerUpEscudo.update();
+	    	        powerUpEscudo.render(batch);
+
+	    	        if (powerUpEscudo.getHitbox().overlaps(nave.getSprite().getBoundingRectangle())) {
+	    	            powerUpEscudo.aplicarEfecto(nave);
+	    	            powerUpEscudo.desactivar();
+	    	        }
+	    	    }
+	    	}
+	      	//HASTA ACA
 
 	      
 	      batch.end();
 	      //nivel completado
 	      if (balls1.size()==0) {
 			Screen ss = new PantallaJuego(game,ronda+1, nave.getVidas(), score, 
-					velXAsteroides+3, velYAsteroides+3, cantAsteroides+10);
+					velXAsteroides+1, velYAsteroides+1, cantAsteroides);
 			ss.resize(1200, 800);
 			game.setScreen(ss);
 			dispose();
 		  }
+	      
+	      if(ronda == 2) {    	 
+	      }
 	    	 
 	}
     
@@ -221,5 +275,31 @@ public class PantallaJuego implements Screen {
 		this.explosionSound.dispose();
 		this.gameMusic.dispose();
 	}
+	
+	private void spawnNuevoPowerUp() {
+	    if ((powerUpSpeed != null && powerUpSpeed.isActivo()) ||
+	        (powerUpTripleDisparo != null && powerUpTripleDisparo.isActivo()) ||
+	        (powerUpEscudo != null && powerUpEscudo.isActivo())) {
+	        return;
+	    }
+
+	    int tipo = randomSpawn.nextInt(3); 
+	    float posX = randomSpawn.nextInt((int) (Gdx.graphics.getWidth() - 64));
+	    switch (tipo) {
+	        case 0:
+	            powerUpSpeed = new PowerUpSpeed();
+	            powerUpSpeed.posicion.x = posX;
+	            break;
+	        case 1:
+	            powerUpTripleDisparo = new PowerUpTripleDisparo();
+	            powerUpTripleDisparo.posicion.x = posX;
+	            break;
+	        case 2:
+	            powerUpEscudo = new PowerUpEscudo();
+	            powerUpEscudo.posicion.x = posX;
+	            break;
+	    }
+	}
+
    
 }
