@@ -17,9 +17,11 @@ public abstract class PowerUp {
     public PowerUp(String rutaTextura) {
         textura = new Texture(rutaTextura);
         float posX = MathUtils.random(0, Gdx.graphics.getWidth() - textura.getWidth());
-        float posY = Gdx.graphics.getHeight();
+        float posY = Gdx.graphics.getHeight(); 
         posicion = new Vector2(posX, posY);
-        hitbox = new Rectangle(posX, posY, textura.getWidth(), textura.getHeight());
+        float ancho = 32;
+        float alto  = 32;
+        hitbox = new Rectangle(posX, posY, ancho, alto);
         activo = true;
         velocidadY = 1f; 
     }
@@ -28,27 +30,32 @@ public abstract class PowerUp {
         if (!activo) return;
         posicion.y -= velocidadY;
         hitbox.setPosition(posicion.x, posicion.y);
-        if (posicion.y + textura.getHeight() < 0) activo = false;
+        if (posicion.y + hitbox.getHeight() < 0) {
+            activo = false;
+        }
     }
+
 
     public void render(SpriteBatch batch) {
         if (activo) {
-            float ancho = 70f;  
-            float alto  = 70f;  
+            float ancho = hitbox.width;
+            float alto  = hitbox.height;
             batch.draw(textura, posicion.x, posicion.y, ancho, alto);
         }
     }
- 
-    public boolean isActivo() { 
-    	return activo; 
-    	}
-    
-    public void desactivar(){
-    	activo = false;
+
+
+    public boolean isActivo() {
+        return activo;
     }
 
-	public void aplicarEfecto(Object jugador) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void desactivar() {
+        activo = false;
+    }
+
+    public Rectangle getHitbox() {
+        return hitbox;
+    }
+
+    public abstract void aplicarEfecto(Object jugador);
 }
