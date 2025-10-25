@@ -24,6 +24,7 @@ public class Nave4 {
     private boolean herido = false;
     private int tiempoHeridoMax=50;
     private int tiempoHerido;
+    private boolean tripleDisparoActivo = false;
     
     private float velocidadBase = 2f;
     
@@ -88,36 +89,32 @@ public class Nave4 {
  		 }
         // disparo
      // disparo
+     // disparo con soporte de modo triple
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            int bulletSpeed = 5;
-
-            // Dirección del disparo: misma que usas para mover/rotar (nave mira hacia arriba, así que +90° aquí)
             float dir = rotationDeg + 90f;
 
-            // Velocidad de la bala a partir del ángulo
-            int vx = MathUtils.round(bulletSpeed * MathUtils.cosDeg(dir));
-            int vy = MathUtils.round(bulletSpeed * MathUtils.sinDeg(dir));
+            if (tripleDisparoActivo) {
+                // Disparo triple tipo "\|/"
+                for (float offset : new float[]{0f, 45f, -45f}) {
+                    float vx = MathUtils.cosDeg(dir + offset) * 5;
+                    float vy = MathUtils.sinDeg(dir + offset) * 5;
+                    Bullet bala = new Bullet(getNoseX(), getNoseY(), vx, vy, txBala);
+                    bala.orientAt(getNoseX(), getNoseY(), dir + offset);
+                    juego.agregarBala(bala);
+                }
+            } else {
+                // Disparo normal
+                float vx = MathUtils.cosDeg(dir) * 5;
+                float vy = MathUtils.sinDeg(dir) * 5;
+                Bullet bala = new Bullet(getNoseX(), getNoseY(), vx, vy, txBala);
+                bala.orientAt(getNoseX(), getNoseY(), dir);
+                juego.agregarBala(bala);
+            }
 
-            // Punto EXACTO de la punta de la nave
-            float tipX = getNoseX();
-            float tipY = getNoseY();
-
-            // Respetamos tu firma del constructor:
-            Bullet bala = new Bullet(
-                tipX,                 // x inicial (aprox; lo ajustamos al centro dentro de orientAt)
-                tipY,                 // y inicial
-                vx, vy,
-                txBala
-            );
-
-            // Ahora sí: giramos la textura de la bala y la centramos en la punta
-            bala.orientAt(tipX, tipY, dir);
-
-            juego.agregarBala(bala);
             soundBala.play();
-        }
+         }
 
-    }
+     }
     
     private float getNoseX() {
         float cx = spr.getX() + spr.getWidth()  / 2f;  // centro de la nave
@@ -208,6 +205,9 @@ public class Nave4 {
         return spr;
     }
     
+    public void activarTripleDisparo() {
+        tripleDisparoActivo = true;
+    }    
     
 	
 }
