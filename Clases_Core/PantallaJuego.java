@@ -55,7 +55,7 @@ public class PantallaJuego implements Screen {
 		//inicializar assets; musica de fondo y efectos de sonido
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1,0.5f);
-		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("piano-loops.wav")); //
+		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("cancionJuego.wav")); //
 		
 		gameMusic.setLooping(true);
 		gameMusic.setVolume(0.5f);
@@ -156,15 +156,18 @@ public class PantallaJuego implements Screen {
   			game.setScreen(ss);
   			dispose();
   		  }
-	      if (powerUp != null && powerUp.isActivo()) {
-	          powerUp.update();
-	          powerUp.render(batch);
+	      if (powerUp != null) {
+	    	    if (powerUp.isActivo()) {
+	    	        powerUp.update();
+	    	        powerUp.render(batch);
 
-	          // Detección de colisión con la nave
-	          if (powerUp.getHitbox().overlaps(nave.getSprite().getBoundingRectangle())) {
-	              powerUp.aplicarEfecto(nave);
-	          }
-	      }
+	    	        if (powerUp.getHitbox().overlaps(nave.getSprite().getBoundingRectangle())) {
+	    	            powerUp.aplicarEfecto(nave);
+	    	            powerUp.desactivar();
+	    	        }
+	    	    }
+	    	}
+
 	      
 	      batch.end();
 	      //nivel completado
