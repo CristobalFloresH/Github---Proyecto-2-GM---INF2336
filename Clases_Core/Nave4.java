@@ -25,6 +25,9 @@ public class Nave4 {
     private int tiempoHeridoMax=50;
     private int tiempoHerido;
     private boolean tripleDisparoActivo = false;
+    private boolean escudoActivo = false;
+    private int duracionEscudo = 300; 
+    private int contadorEscudo = 0;
     
     private float velocidadBase = 2f;
     
@@ -87,14 +90,10 @@ public class Nave4 {
  		   tiempoHerido--;
  		   if (tiempoHerido<=0) herido = false;
  		 }
-        // disparo
-     // disparo
-     // disparo con soporte de modo triple
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             float dir = rotationDeg + 90f;
 
             if (tripleDisparoActivo) {
-                // Disparo triple tipo "\|/"
                 for (float offset : new float[]{0f, 45f, -45f}) {
                     float vx = MathUtils.cosDeg(dir + offset) * 5;
                     float vy = MathUtils.sinDeg(dir + offset) * 5;
@@ -103,7 +102,6 @@ public class Nave4 {
                     juego.agregarBala(bala);
                 }
             } else {
-                // Disparo normal
                 float vx = MathUtils.cosDeg(dir) * 5;
                 float vy = MathUtils.sinDeg(dir) * 5;
                 Bullet bala = new Bullet(getNoseX(), getNoseY(), vx, vy, txBala);
@@ -115,6 +113,8 @@ public class Nave4 {
          }
 
      }
+    
+    
     
     private float getNoseX() {
         float cx = spr.getX() + spr.getWidth()  / 2f;  // centro de la nave
@@ -141,35 +141,37 @@ public class Nave4 {
         return cy + offY;
     }
    
-      
+   //camvio
     public boolean checkCollision(Ball2 b) {
-        if(!herido && b.getArea().overlaps(spr.getBoundingRectangle())){
-        	// rebote
-            if (xVel ==0) xVel += b.getXSpeed()/2;
-            if (b.getXSpeed() ==0) b.setXSpeed(b.getXSpeed() + (int)xVel/2);
-            xVel = - xVel;
+        if (!herido && b.getArea().overlaps(spr.getBoundingRectangle())) {
+            // Si la nave tiene escudo, ignora el daño y rompe el escudo
+            if (escudoActivo) {
+                desactivarEscudo();
+                return false;
+            }
+
+            // Rebote normal
+            if (xVel == 0) xVel += b.getXSpeed() / 2;
+            if (b.getXSpeed() == 0) b.setXSpeed(b.getXSpeed() + (int) xVel / 2);
+            xVel = -xVel;
             b.setXSpeed(-b.getXSpeed());
-            
-            if (yVel ==0) yVel += b.getySpeed()/2;
-            if (b.getySpeed() ==0) b.setySpeed(b.getySpeed() + (int)yVel/2);
-            yVel = - yVel;
-            b.setySpeed(- b.getySpeed());
-            // despegar sprites
-      /*      int cont = 0;
-            while (b.getArea().overlaps(spr.getBoundingRectangle()) && cont<xVel) {
-               spr.setX(spr.getX()+Math.signum(xVel));
-            }   */
-        	//actualizar vidas y herir
+
+            if (yVel == 0) yVel += b.getySpeed() / 2;
+            if (b.getySpeed() == 0) b.setySpeed(b.getySpeed() + (int) yVel / 2);
+            yVel = -yVel;
+            b.setySpeed(-b.getySpeed());
+
             vidas--;
             herido = true;
-  		    tiempoHerido=tiempoHeridoMax;
-  		    sonidoHerido.play();
-            if (vidas<=0) 
-          	    destruida = true; 
+            tiempoHerido = tiempoHeridoMax;
+            sonidoHerido.play();
+
+            if (vidas <= 0) destruida = true;
             return true;
         }
         return false;
     }
+
     
     public boolean estaDestruido() {
        return !herido && destruida;
@@ -195,19 +197,55 @@ public class Nave4 {
         spr.setTexture(nuevaTextura);
     }
 
-    /* Restaura el modelo original
+    /*Restaura el modelo original
     public void restaurarModelo() {
         Texture normal = new Texture(Gdx.files.internal("MainShip3.png"));
         spr.setTexture(normal);
+        velocidadBase = 2f;                  
+        tripleDisparoActivo = false;  
     } */
-    
+   
     public Sprite getSprite() {
         return spr;
     }
     
+    
+    //NUEVO
     public void activarTripleDisparo() {
         tripleDisparoActivo = true;
     }    
     
-	
+    public void restaurarTripleDisparto(){
+        tripleDisparoActivo = false; 
+    	
+    }
+    
+    public void restaurarVelocidad(){
+    	velocidadBase = 2f; 
+    }
+    
+    public void activarEscudo() {
+        escudoActivo = true;
+        contadorEscudo = duracionEscudo;
+        cambiarModelo("NaveEscudo.png");
+    }
+
+    public void actualizarEscudo() {
+        if (escudoActivo) {
+            contadorEscudo--;
+            if (contadorEscudo <= 0) {
+                desactivarEscudo();
+            }
+        }
+    }
+    public void desactivarEscudo() {
+        escudoActivo = false;
+        cambiarModelo("MainShip3.png");
+    }
+
+    public boolean isEscudoActivo() {
+        return escudoActivo;
+    }
+
+    
 }
