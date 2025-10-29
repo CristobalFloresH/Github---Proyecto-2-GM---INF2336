@@ -299,7 +299,51 @@ public class PantallaJuego implements Screen {
 	            powerUpEscudo.posicion.x = posX;
 	            break;
 	    }
-	}
+	
+	
+	// crear asteroides
+	 // crear asteroides con texturas distintas según su tipo
+	    Random r = new Random();
+	    for (int i = 0; i < cantAsteroides; i++) {
+	        int startX = r.nextInt((int) Gdx.graphics.getWidth());
+	        int startY = 50 + r.nextInt((int) Gdx.graphics.getHeight() - 50);
+	        int size = 20 + r.nextInt(10);
+	        int vx = velXAsteroides + r.nextInt(2);
+	        int vy = velYAsteroides + r.nextInt(2);
 
-   
+	        int pick = r.nextInt(3); // elige tipo de movimiento
+	        MovementStrategy strategy;
+	        Texture textura;
+
+	        switch (pick) {
+	            case 0:
+	                strategy = new ErraticDirectionMovement(1, 4);
+	                textura = new Texture(Gdx.files.internal("meteoro_erratico.png"));
+	                break;
+	            case 1:
+	                strategy = new SpeedOscillatingMovement(0.9f, 0.3f);
+	                textura = new Texture(Gdx.files.internal("meteoro_oscila.png"));
+	                break;
+	            default:
+	                float radius = 40 + r.nextInt(60);
+	                float angSpeed = r.nextBoolean() ? 2.5f : -2.5f;
+	                strategy = new CircularMovement(startX, startY, radius, angSpeed);
+	                textura = new Texture(Gdx.files.internal("meteoro_circular.png"));
+	                vx = 0; vy = 0;
+	                break;
+	        }
+
+	        Ball2 bb = new Ball2(
+	            startX,
+	            startY,
+	            size,
+	            vx, vy,
+	            textura,
+	            strategy
+	        );
+
+	        balls1.add(bb);
+	        balls2.add(bb);
+	    }
+}
 }
