@@ -241,10 +241,10 @@ public class Nave4 {
 }
     
     public void desactivarEscudo() {
-        escudoActivo = false;
-        tiempoEscudoActivo = 0f; // Limpiar contador
-        cambiarModelo("MainShip3.png");
-    }
+        escudoActivo = false;
+        tiempoEscudoActivo = 0f; // Limpiar contador
+        cambiarModelo("MainShip3.png");
+    }
 
     public boolean isEscudoActivo() {
         return escudoActivo;
