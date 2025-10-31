@@ -28,7 +28,7 @@ public class Nave4 {
     private boolean escudoActivo = false;
     private final float DURACION_ESCUDO = 10; 
     private float tiempoEscudoActivo = 0f;  
-/
+
     
     private float velocidadBase = 2f;
     
