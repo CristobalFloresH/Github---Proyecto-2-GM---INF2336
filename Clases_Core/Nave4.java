@@ -26,8 +26,9 @@ public class Nave4 {
     private int tiempoHerido;
     private boolean tripleDisparoActivo = false;
     private boolean escudoActivo = false;
-    private int duracionEscudo = 300; 
-    private int contadorEscudo = 0;
+    private final float DURACION_ESCUDO = 10; 
+    private float tiempoEscudoActivo = 0f;  
+/
     
     private float velocidadBase = 2f;
     
@@ -226,22 +227,24 @@ public class Nave4 {
     
     public void activarEscudo() {
         escudoActivo = true;
-        contadorEscudo = duracionEscudo;
+        tiempoEscudoActivo = DURACION_ESCUDO;
         cambiarModelo("NaveEscudo.png");
     }
 
-    public void actualizarEscudo() {
-        if (escudoActivo) {
-            contadorEscudo--;
-            if (contadorEscudo <= 0) {
-                desactivarEscudo();
-            }
+    public void actualizarEscudo(float delta) { 
+    if (escudoActivo) {
+        tiempoEscudoActivo -= delta; // Descontar tiempo real
+        if (tiempoEscudoActivo <= 0) {
+            desactivarEscudo();
         }
     }
+}
+    
     public void desactivarEscudo() {
-        escudoActivo = false;
-        cambiarModelo("MainShip3.png");
-    }
+        escudoActivo = false;
+        tiempoEscudoActivo = 0f; // Limpiar contador
+        cambiarModelo("MainShip3.png");
+    }
 
     public boolean isEscudoActivo() {
         return escudoActivo;
