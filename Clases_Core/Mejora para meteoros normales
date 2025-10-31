@@ -1,29 +1,36 @@
-public class DefaultBounceMovement implements MovementStrategy { // MovementStrategy para meteoros normales 
-    public void update(Ball2 ball) { 
-        // 1. Aplica la velocidad actual
+package puppy.code; // clase DefaultBounceMovement.java
+
+import com.badlogic.gdx.Gdx;
+
+public class DefaultBounceMovement implements MovementStrategy {
+
+    @Override
+    public void update(Ball2 ball) {
+        // 1. Calcula la nueva posición en base a la velocidad actual
         int newX = ball.getX() + ball.getXSpeed();
         int newY = ball.getY() + ball.getySpeed();
 
-        // 2. Manejo de rebote en los bordes (Horizontal)
+        // 2. Manejo de rebote horizontal (si choca con el borde izquierdo o derecho)
         if (newX < 0 || newX + ball.getSpriteWidth() > Gdx.graphics.getWidth()) {
             ball.setXSpeed(-ball.getXSpeed());
-            newX = ball.getX() + ball.getXSpeed(); // Reposiciona para evitar quedarse pegado
+            // Reposiciona el asteroide para evitar que se quede "pegado" al borde después del rebote
+            newX = ball.getX() + ball.getXSpeed(); 
         }
 
-        // 3. Manejo de rebote en los bordes (Vertical)
+        // 3. Manejo de rebote vertical (si choca con el borde inferior o superior)
         if (newY < 0 || newY + ball.getSpriteHeight() > Gdx.graphics.getHeight()) {
             ball.setySpeed(-ball.getySpeed());
+            // Reposiciona el asteroide para evitar que se quede "pegado"
             newY = ball.getY() + ball.getySpeed();
         }
         
-        // 4. Actualiza la posición del asteroide
+        // 4. Aplica la posición final al objeto Ball2 (que a su vez actualiza su sprite)
         ball.setPosition(newX, newY);
     }
 }
 
 
-
-private void generarAsteroidesIniciales() {  // cambiar Metodo de pantalla de juego 
+private void generarAsteroidesIniciales() {  // cambiar Metodo generarAsteroidesIniciales actual de pantalla de juego por este 
     Random r = new Random();
     for (int i = 0; i < cantAsteroides; i++) {
         int startX = r.nextInt((int) Gdx.graphics.getWidth());
