@@ -77,10 +77,10 @@ public class PantallaJuego implements Screen {
 	    				new Texture(Gdx.files.internal("Rocket2.png")), 
 	    				Gdx.audio.newSound(Gdx.files.internal("pop-sound.mp3"))); 
         nave.setVidas(vidas);
-        //NUEVO
-	    powerUpSpeed = new PowerUpSpeed();
-	    powerUpTripleDisparo= new PowerUpTripleDisparo();
-	    powerUpEscudo= new PowerUpEscudo();
+        //NUEVO // se eliminan para que cada uno empieze en null y no salgan 3 al principio
+	    //powerUpSpeed = new PowerUpSpeed();
+	    //powerUpTripleDisparo= new PowerUpTripleDisparo();
+	    //powerUpEscudo= new PowerUpEscudo();
 	    siguienteSpawn = randomSpawn.nextFloat() * (TIEMPO_MAX_ENTRE_SPAWN - TIEMPO_MIN_ENTRE_SPAWN) + TIEMPO_MIN_ENTRE_SPAWN;
 		generarAsteroidesIniciales();
 
