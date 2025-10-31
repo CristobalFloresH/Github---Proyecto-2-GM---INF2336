@@ -148,7 +148,7 @@ public class PantallaJuego implements Screen {
 	          b.draw(batch);
 	      }
 	      nave.draw(batch, this);
-	      nave.actualizarEscudo();
+	      nave.actualizarEscudo(delta);
 
 	      //dibujar asteroides y manejar colision con nave
 	      for (int i = 0; i < balls1.size(); i++) {
