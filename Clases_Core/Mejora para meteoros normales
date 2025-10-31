@@ -1,0 +1,85 @@
+public class DefaultBounceMovement implements MovementStrategy { // MovementStrategy para meteoros normales 
+    public void update(Ball2 ball) { 
+        // 1. Aplica la velocidad actual
+        int newX = ball.getX() + ball.getXSpeed();
+        int newY = ball.getY() + ball.getySpeed();
+
+        // 2. Manejo de rebote en los bordes (Horizontal)
+        if (newX < 0 || newX + ball.getSpriteWidth() > Gdx.graphics.getWidth()) {
+            ball.setXSpeed(-ball.getXSpeed());
+            newX = ball.getX() + ball.getXSpeed(); // Reposiciona para evitar quedarse pegado
+        }
+
+        // 3. Manejo de rebote en los bordes (Vertical)
+        if (newY < 0 || newY + ball.getSpriteHeight() > Gdx.graphics.getHeight()) {
+            ball.setySpeed(-ball.getySpeed());
+            newY = ball.getY() + ball.getySpeed();
+        }
+        
+        // 4. Actualiza la posición del asteroide
+        ball.setPosition(newX, newY);
+    }
+}
+
+
+
+private void generarAsteroidesIniciales() {  // cambiar Metodo de pantalla de juego 
+    Random r = new Random();
+    for (int i = 0; i < cantAsteroides; i++) {
+        int startX = r.nextInt((int) Gdx.graphics.getWidth());
+        int startY = 50 + r.nextInt((int) Gdx.graphics.getHeight() - 50);
+        int size = 20 + r.nextInt(10);
+        int vx = velXAsteroides + r.nextInt(2);
+        int vy = velYAsteroides + r.nextInt(2);
+
+        MovementStrategy strategy;
+        Texture textura;
+
+        // **PASO CLAVE 1: Decisión 50/50 (Normal vs. Especial)**
+        boolean isNormal = r.nextBoolean(); // true = Normal (50%), false = Especial (50%)
+
+        if (isNormal) {
+            // 50% de probabilidad: METEORITO NORMAL (Movimiento Recto)
+            strategy = new DefaultBounceMovement(); // Usamos tu estrategia por defecto
+            textura = new Texture(Gdx.files.internal("meteoro_normal.png"));
+            // Las velocidades vx/vy ya están calculadas.
+
+        } else {
+            // 50% de probabilidad: METEORITO ESPECIAL
+            // **PASO CLAVE 2: Elegir 1 de las 3 estrategias complejas**
+            int specialPick = r.nextInt(3); 
+
+            switch (specialPick) {
+                case 0:
+                    strategy = new ErraticDirectionMovement(1, 4);
+                    textura = new Texture(Gdx.files.internal("meteoro_erratico.png"));
+                    break;
+                case 1:
+                    strategy = new SpeedOscillatingMovement(0.9f, 0.3f);
+                    textura = new Texture(Gdx.files.internal("meteoro_oscila.png"));
+                    break;
+                default: // case 2: Circular
+                    float radius = 40 + r.nextInt(60);
+                    float angSpeed = r.nextBoolean() ? 2.5f : -2.5f;
+                    strategy = new CircularMovement(startX, startY, radius, angSpeed);
+                    textura = new Texture(Gdx.files.internal("meteoro_circular.png"));
+                    // Se anulan vx/vy porque la estrategia Circular usa su propia lógica de posición/velocidad
+                    vx = 0; vy = 0;
+                    break;
+            }
+        }
+        
+        // Crea y añade el asteroide con la estrategia elegida
+        Ball2 bb = new Ball2(
+            startX,
+            startY,
+            size,
+            vx, vy,
+            textura,
+            strategy
+        );
+
+        balls1.add(bb);
+        balls2.add(bb);
+    }
+}
