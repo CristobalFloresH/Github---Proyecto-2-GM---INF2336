@@ -38,7 +38,6 @@ public class Nave4 {
     	this.txBala = txBala;
     	spr = new Sprite(tx);
     	spr.setPosition(x, y);
-    	//spr.setOriginCenter();
     	spr.setBounds(x, y, 45, 45);
     	spr.setOriginCenter();   
 
@@ -48,7 +47,7 @@ public class Nave4 {
         float y =  spr.getY();
         if (!herido) {
         	
-	        // que se mueva con teclado
+
         	xVel = 0;
         	yVel = 0;
         	if (Gdx.input.isKeyPressed(Input.Keys.LEFT))  xVel = -velocidadBase;
@@ -61,21 +60,8 @@ public class Nave4 {
         	}
         	spr.setRotation(rotationDeg);
         	
-	     /*   if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) spr.setRotation(++rotacion);
-	        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) spr.setRotation(--rotacion);
 	        
-	        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-	        	xVel -=Math.sin(Math.toRadians(rotacion));
-	        	yVel +=Math.cos(Math.toRadians(rotacion));
-	        	System.out.println(rotacion+" - "+Math.sin(Math.toRadians(rotacion))+" - "+Math.cos(Math.toRadians(rotacion))) ;    
-	        }
-	        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-	        	xVel +=Math.sin(Math.toRadians(rotacion));
-	        	yVel -=Math.cos(Math.toRadians(rotacion));
-	        	     
-	        }*/
-	        
-	        // que se mantenga dentro de los bordes de la ventana
+
 	        if (x+xVel < 0 || x+xVel+spr.getWidth() > Gdx.graphics.getWidth())
 	        	xVel*=-1;
 	        if (y+yVel < 0 || y+yVel+spr.getHeight() > Gdx.graphics.getHeight())
@@ -118,40 +104,37 @@ public class Nave4 {
     
     
     private float getNoseX() {
-        float cx = spr.getX() + spr.getWidth()  / 2f;  // centro de la nave
-        float cy = spr.getY() + spr.getHeight() / 2f;
-        float halfH = spr.getHeight() / 2f;            // vector punta: (0, halfH) en espacio local
+        float cx = spr.getX() + spr.getWidth()  / 2f;  
+        float halfH = spr.getHeight() / 2f;          
 
         float rad = rotationDeg * MathUtils.degreesToRadians;
-        // Rotamos (0, halfH) por rotationDeg:
+
         float offX = -halfH * MathUtils.sin(rad);
-        float offY =  halfH * MathUtils.cos(rad);
+
 
         return cx + offX;
     }
       
     private float getNoseY() {
-        float cx = spr.getX() + spr.getWidth()  / 2f;
         float cy = spr.getY() + spr.getHeight() / 2f;
         float halfH = spr.getHeight() / 2f;
 
         float rad = rotationDeg * MathUtils.degreesToRadians;
-        float offX = -halfH * MathUtils.sin(rad);
         float offY =  halfH * MathUtils.cos(rad);
 
         return cy + offY;
     }
    
-   //camvio
+
     public boolean checkCollision(Ball2 b) {
         if (!herido && b.getArea().overlaps(spr.getBoundingRectangle())) {
-            // Si la nave tiene escudo, ignora el daño y rompe el escudo
+
             if (escudoActivo) {
                 desactivarEscudo();
-                return false;
+                return true; 
             }
 
-            // Rebote normal
+
             if (xVel == 0) xVel += b.getXSpeed() / 2;
             if (b.getXSpeed() == 0) b.setXSpeed(b.getXSpeed() + (int) xVel / 2);
             xVel = -xVel;
@@ -161,6 +144,7 @@ public class Nave4 {
             if (b.getySpeed() == 0) b.setySpeed(b.getySpeed() + (int) yVel / 2);
             yVel = -yVel;
             b.setySpeed(-b.getySpeed());
+
 
             vidas--;
             herido = true;
@@ -182,7 +166,6 @@ public class Nave4 {
     }
     
     public int getVidas() {return vidas;}
-    //public boolean isDestruida() {return destruida;}
     public int getX() {return (int) spr.getX();}
     public int getY() {return (int) spr.getY();}
 	public void setVidas(int vidas2) {vidas = vidas2;}
@@ -198,20 +181,23 @@ public class Nave4 {
         spr.setTexture(nuevaTextura);
     }
 
-    /*Restaura el modelo original
     public void restaurarModelo() {
+
         Texture normal = new Texture(Gdx.files.internal("MainShip3.png"));
         spr.setTexture(normal);
+
+
         velocidadBase = 2f;                  
         tripleDisparoActivo = false;  
-    } */
+        escudoActivo = false;
+        tiempoEscudoActivo = 0f;
+    }
+
    
     public Sprite getSprite() {
         return spr;
     }
     
-    
-    //NUEVO
     public void activarTripleDisparo() {
         tripleDisparoActivo = true;
     }    
@@ -230,25 +216,23 @@ public class Nave4 {
         tiempoEscudoActivo = DURACION_ESCUDO;
         cambiarModelo("NaveEscudo.png");
     }
+    
+    public void desactivarEscudo() {
+    	escudoActivo = false;
+    	tiempoEscudoActivo = 0f; 
+    	cambiarModelo("MainShip3.png");}
+    
+
+    	    public boolean isEscudoActivo() {
+    	        return escudoActivo;
+    	    }
 
     public void actualizarEscudo(float delta) { 
     if (escudoActivo) {
-        tiempoEscudoActivo -= delta; // Descontar tiempo real
+        tiempoEscudoActivo -= delta; 
         if (tiempoEscudoActivo <= 0) {
             desactivarEscudo();
         }
     }
-}
-    
-    public void desactivarEscudo() {
-        escudoActivo = false;
-        tiempoEscudoActivo = 0f; // Limpiar contador
-        cambiarModelo("MainShip3.png");
     }
-
-    public boolean isEscudoActivo() {
-        return escudoActivo;
-    }
-
-    
 }
