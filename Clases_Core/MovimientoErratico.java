@@ -3,12 +3,12 @@ package puppy.code;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 
-public class ErraticDirectionMovement implements MovementStrategy {
-    private int framesToJitter = 30; // cada ~0.5s a 60fps
-    private int frameCount = 0;
+public class MovimientoErratico implements MovementStrategy {
+    private int FramesCambio = 30; 
+    private int CantFrames = 0;
     private final int speedMin, speedMax;
 
-    public ErraticDirectionMovement(int speedMin, int speedMax) {
+    public MovimientoErratico(int speedMin, int speedMax) {
         this.speedMin = speedMin;
         this.speedMax = speedMax;
     }
@@ -20,27 +20,27 @@ public class ErraticDirectionMovement implements MovementStrategy {
         int vx = b.getXSpeed();
         int vy = b.getySpeed();
 
-        // cada cierto tiempo “sacudimos” la dirección
-        if (++frameCount >= framesToJitter) {
-            frameCount = 0;
+
+        if (++CantFrames >= FramesCambio) {
+            CantFrames = 0;
             int nvx = MathUtils.random(speedMin, speedMax) * (MathUtils.randomBoolean() ? 1 : -1);
             int nvy = MathUtils.random(speedMin, speedMax) * (MathUtils.randomBoolean() ? 1 : -1);
-            // evitar quedar en (0,0)
+ 
             if (nvx == 0 && nvy == 0) nvx = speedMin;
             vx = nvx;
             vy = nvy;
-            // variar próximo intervalo
-            framesToJitter = MathUtils.random(20, 45);
+
+            FramesCambio = MathUtils.random(20, 45);
         }
 
         x += vx;
         y += vy;
 
-        if (x < 0 || x + b.getSpriteWidth() > Gdx.graphics.getWidth()) {
+        if (x < 0 || x + 44 > Gdx.graphics.getWidth()) {
             vx = -vx;
             x = MathUtils.clamp(x, 0, Gdx.graphics.getWidth() - b.getSpriteWidth());
         }
-        if (y < 0 || y + b.getSpriteHeight() > Gdx.graphics.getHeight()) {
+        if (y < 0 || y + 48 > Gdx.graphics.getHeight()) {
             vy = -vy;
             y = MathUtils.clamp(y, 0, Gdx.graphics.getHeight() - b.getSpriteHeight());
         }
