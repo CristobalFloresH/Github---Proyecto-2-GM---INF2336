@@ -10,9 +10,9 @@ public class PowerUpTripleDisparo extends PowerUp {
 
     @Override
     public void aplicarEfecto(Object jugador) {
-    	
         if (jugador instanceof Nave4) {
             Nave4 nave = (Nave4) jugador;
+            nave.restaurarModelo(); 
             nave.activarTripleDisparo();
             nave.cambiarModelo("NaveDisparoMultiple.png");
             desactivar();
