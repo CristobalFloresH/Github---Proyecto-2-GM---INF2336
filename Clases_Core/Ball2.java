@@ -13,10 +13,10 @@ public class Ball2 {
     private int ySpeed;
     private Sprite spr;
 
-    // Nueva: estrategia de movimiento (DIP)
+
     private MovementStrategy movement;
 
-    // Constructor nuevo: permite inyectar estrategia
+
     public Ball2(int x, int y, int size, int xSpeed, int ySpeed, Texture tx, MovementStrategy movement) {
         spr = new Sprite(tx);
 
@@ -32,17 +32,15 @@ public class Ball2 {
 
         this.xSpeed = xSpeed;
         this.ySpeed = ySpeed;
-
-        // si viene null, usa la estrategia por defecto (rebote clásico)
-        this.movement = (movement != null) ? movement : new DefaultBounceMovement();
+        this.movement = (movement != null) ? movement : new MovimientoDefault();
     }
 
-    // Constructor original (compatibilidad con tu código existente)
+
     public Ball2(int x, int y, int size, int xSpeed, int ySpeed, Texture tx) {
-        this(x, y, size, xSpeed, ySpeed, tx, new DefaultBounceMovement());
+        this(x, y, size, xSpeed, ySpeed, tx, new MovimientoDefault());
     }
 
-    // Delegación a la estrategia (OCP)
+
     public void update() {
         movement.update(this);
     }
@@ -55,27 +53,76 @@ public class Ball2 {
         spr.draw(batch);
     }
 
-    // Rebote entre meteoros (se mantiene igual que tu versión)
-    public void checkCollision(Ball2 b2) {
-        if (spr.getBoundingRectangle().overlaps(b2.spr.getBoundingRectangle())) {
-            if (getXSpeed() == 0) setXSpeed(getXSpeed() + b2.getXSpeed() / 2);
-            if (b2.getXSpeed() == 0) b2.setXSpeed(b2.getXSpeed() + getXSpeed() / 2);
-            setXSpeed(-getXSpeed());
-            b2.setXSpeed(-b2.getXSpeed());
 
-            if (getySpeed() == 0) setySpeed(getySpeed() + b2.getySpeed() / 2);
-            if (b2.getySpeed() == 0) b2.setySpeed(b2.getySpeed() + getySpeed() / 2);
-            setySpeed(-getySpeed());
-            b2.setySpeed(-b2.getySpeed());
+    public void checkCollision(Ball2 b2) {
+        Rectangle r1 = spr.getBoundingRectangle();
+        Rectangle r2 = b2.spr.getBoundingRectangle();
+
+        if (!r1.overlaps(r2)) return;
+
+
+        float c1x = r1.x + r1.width  / 2f;
+        float c1y = r1.y + r1.height / 2f;
+        float c2x = r2.x + r2.width  / 2f;
+        float c2y = r2.y + r2.height / 2f;
+
+        float dx = c1x - c2x;
+        float dy = c1y - c2y;
+
+        float overlapX = (r1.width  / 2f + r2.width  / 2f) - Math.abs(dx);
+        float overlapY = (r1.height / 2f + r2.height / 2f) - Math.abs(dy);
+
+
+        int pad = 1;
+
+        int x1 = getX();
+        int y1 = getY();
+        int x2 = b2.getX();
+        int y2 = b2.getY();
+
+        int vx1 = getXSpeed();
+        int vy1 = getySpeed();
+        int vx2 = b2.getXSpeed();
+        int vy2 = b2.getySpeed();
+
+
+        if (overlapX < overlapY) {
+            int push = Math.round(overlapX / 2f) + pad;
+            if (dx > 0) {
+
+                setPosition(x1 + push, y1);
+                b2.setPosition(x2 - push, y2);
+            } else {
+                setPosition(x1 - push, y1);
+                b2.setPosition(x2 + push, y2);
+            }
+
+            if (vx1 == 0 && vx2 == 0) { vx1 = 1; vx2 = -1; } 
+            setXSpeed(-vx1);
+            b2.setXSpeed(-vx2);
+        } else {
+            int push = Math.round(overlapY / 2f) + pad;
+            if (dy > 0) {
+
+                setPosition(x1, y1 + push);
+                b2.setPosition(x2, y2 - push);
+            } else {
+                setPosition(x1, y1 - push);
+                b2.setPosition(x2, y2 + push);
+            }
+
+            if (vy1 == 0 && vy2 == 0) { vy1 = 1; vy2 = -1; } 
+            setySpeed(-vy1);
+            b2.setySpeed(-vy2);
         }
     }
 
-    // --- Métodos de apoyo usados por estrategias y por tu lógica actual ---
+
+
 
     public int getX() { return x; }
     public int getY() { return y; }
 
-    /** Actualiza posición interna y del sprite (para estrategias). */
     public void setPosition(int nx, int ny) {
         this.x = nx;
         this.y = ny;
@@ -91,7 +138,7 @@ public class Ball2 {
     public int getySpeed() { return ySpeed; }
     public void setySpeed(int ySpeed) { this.ySpeed = ySpeed; }
 
-    /** (Opcional) Permite cambiar la estrategia en caliente si quieres power-ups de IA. */
+
     public void setMovementStrategy(MovementStrategy movement) {
         if (movement != null) this.movement = movement;
     }
@@ -99,4 +146,9 @@ public class Ball2 {
     public MovementStrategy getMovementStrategy() {
         return movement;
     }
+    
+    public Sprite getSprite() {
+        return spr;
+    }
+
 }
