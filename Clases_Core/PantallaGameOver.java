@@ -5,30 +5,20 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.audio.Music;
 
-public class PantallaMenu implements Screen {
+
+public class PantallaGameOver implements Screen {
 
 	private SpaceNavigation game;
 	private OrthographicCamera camera;
-	private Music musicaMenu;
 
-	public PantallaMenu(SpaceNavigation game) {
+	public PantallaGameOver(SpaceNavigation game) {
 		this.game = game;
         
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1200, 800);
-		musicaMenu = Gdx.audio.newMusic(Gdx.files.internal("cancionMenu.wav")); //
-		
-		musicaMenu.setLooping(true);
-		musicaMenu.setVolume(0.5f);
-		musicaMenu.play();
-		
 	}
 
-	
-	
 	@Override
 	public void render(float delta) {
 		ScreenUtils.clear(0, 0, 0.2f, 1);
@@ -37,20 +27,19 @@ public class PantallaMenu implements Screen {
 		game.getBatch().setProjectionMatrix(camera.combined);
 
 		game.getBatch().begin();
-		Texture fondoMenu = new Texture(Gdx.files.internal("menu.png"));
-		game.getBatch().draw(fondoMenu, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		game.getFont().draw(game.getBatch(), "Presiona [ENTER] para comenzar", 400, 80);
+		game.getFont().draw(game.getBatch(), "Game Over !!! ", 120, 400,400,1,true);
+		game.getFont().draw(game.getBatch(), "Pincha en cualquier lado para reiniciar ...", 100, 300);
 	
 		game.getBatch().end();
 
 		if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
-			Screen ss = new PantallaJuego(game,1,3,0,1,1,7);
+			Screen ss = new PantallaJuego(game,1,3,0,1,1,10);
 			ss.resize(1200, 800);
 			game.setScreen(ss);
 			dispose();
 		}
 	}
-	
+ 
 	
 	@Override
 	public void show() {
@@ -85,7 +74,6 @@ public class PantallaMenu implements Screen {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		this.musicaMenu.dispose();
 		
 	}
    
