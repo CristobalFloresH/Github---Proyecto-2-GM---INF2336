@@ -62,7 +62,6 @@ public class PantallaJuego implements Screen {
 		camera.setToOrtho(false, 800, 640);
 		
 		fondo = new Texture(Gdx.files.internal("fondo.png"));
-		//inicializar assets; musica de fondo y efectos de sonido
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1,0.5f);
 		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("cancionJuego.wav")); //
@@ -71,16 +70,12 @@ public class PantallaJuego implements Screen {
 		gameMusic.setVolume(0.5f);
 		gameMusic.play();
 		
-	    // cargar imagen de la nave, 64x64   
+ 
 	    nave = new Nave4(Gdx.graphics.getWidth()/2-50,30,new Texture(Gdx.files.internal("MainShip3.png")),
 	    				Gdx.audio.newSound(Gdx.files.internal("hurt.ogg")), 
 	    				new Texture(Gdx.files.internal("Rocket2.png")), 
 	    				Gdx.audio.newSound(Gdx.files.internal("pop-sound.mp3"))); 
         nave.setVidas(vidas);
-        //NUEVO // se eliminan para que cada uno empieze en null y no salgan 3 al principio
-	    //powerUpSpeed = new PowerUpSpeed();
-	    //powerUpTripleDisparo= new PowerUpTripleDisparo();
-	    //powerUpEscudo= new PowerUpEscudo();
 	    siguienteSpawn = randomSpawn.nextFloat() * (TIEMPO_MAX_ENTRE_SPAWN - TIEMPO_MIN_ENTRE_SPAWN) + TIEMPO_MIN_ENTRE_SPAWN;
 		generarAsteroidesIniciales();
 
@@ -107,13 +102,13 @@ public class PantallaJuego implements Screen {
           batch.draw(fondo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		  dibujaEncabezado();
 	      if (!nave.estaHerido()) {
-		      // colisiones entre balas y asteroides y su destruccion  
+
 	    	  for (int i = 0; i < balas.size(); i++) {
 		            Bullet b = balas.get(i);
 		            b.update();
 		            for (int j = 0; j < balls1.size(); j++) {    
 		              if (b.checkCollision(balls1.get(j))) {          
-		            	 explosionSound.play();
+		            	 explosionSound.play(0.1f);
 		            	 balls1.remove(j);
 		            	 balls2.remove(j);
 		            	 j--;
@@ -121,17 +116,16 @@ public class PantallaJuego implements Screen {
 		              }   	  
 		  	        }
 		                
-		         //   b.draw(batch);
 		            if (b.isDestroyed()) {
 		                balas.remove(b);
-		                i--; //para no saltarse 1 tras eliminar del arraylist
+		                i--; 
 		            }
 		      }
-		      //actualizar movimiento de asteroides dentro del area
+
 		      for (Ball2 ball : balls1) {
 		          ball.update();
 		      }
-		      //colisiones entre asteroides y sus rebotes  
+
 		      for (int i=0;i<balls1.size();i++) {
 		    	Ball2 ball1 = balls1.get(i);   
 		        for (int j=0;j<balls2.size();j++) {
@@ -143,20 +137,19 @@ public class PantallaJuego implements Screen {
 		        }
 		      } 
 	      }
-	      //dibujar balas
+
 	     for (Bullet b : balas) {       
 	          b.draw(batch);
 	      }
 	      nave.draw(batch, this);
 	      nave.actualizarEscudo(delta);
 
-	      //dibujar asteroides y manejar colision con nave
+
 	      for (int i = 0; i < balls1.size(); i++) {
 	    	    Ball2 b=balls1.get(i);
 	    	    b.draw(batch);
-		          //perdió vida o game over
+
 	              if (nave.checkCollision(b)) {
-		            //asteroide se destruye con el choque             
 	            	 balls1.remove(i);
 	            	 balls2.remove(i);
 	            	 i--;
@@ -172,7 +165,7 @@ public class PantallaJuego implements Screen {
   			dispose();
   		  }
 	      
-	      //POWER UPS
+	
 	      if (powerUpTripleDisparo != null) {   	    	  
 	    	    if (powerUpTripleDisparo.isActivo()) {
 	    	    	powerUpTripleDisparo.update();
@@ -208,16 +201,16 @@ public class PantallaJuego implements Screen {
 	    	        }
 	    	    }
 	    	}
-	      	//HASTA ACA
+
 
 	      
 	      batch.end();
-	      //nivel completado
+
 	      if (balls1.size()==0) {
               
             int nuevoCantAsteroides;
 
-            // La dificultad se basa en la ronda que estamos 
+
             if (this.ronda == 1) {
                nuevoCantAsteroides = this.cantAsteroides + 3; 
             } else if (this.ronda == 2) {
@@ -225,18 +218,16 @@ public class PantallaJuego implements Screen {
             } else {
                 nuevoCantAsteroides = this.cantAsteroides + 2;
             }
-            // Incrementamos la velocidad base de los asteroides
+
             int nuevaVelX = velXAsteroides + 1;
             int nuevaVelY = velYAsteroides + 1;
 
-            // Creamos la nueva pantalla de juego con los valores calculados
-			Screen ss = new PantallaJuego(game, this.ronda + 1, nave.getVidas(), score, 
-					nuevaVelX, nuevaVelY, nuevoCantAsteroides);
+			Screen ss = new PantallaJuego(game, this.ronda + 1, nave.getVidas(), score,nuevaVelX, nuevaVelY, nuevoCantAsteroides);
             
 			ss.resize(1200, 800);
 			game.setScreen(ss);
 			dispose();
-		  }
+		}
 	    	 
 	}
     
@@ -307,47 +298,79 @@ public class PantallaJuego implements Screen {
 	
 }
 	private void generarAsteroidesIniciales() {
-    Random r = new Random();
-    for (int i = 0; i < cantAsteroides; i++) {
-        int startX = r.nextInt((int) Gdx.graphics.getWidth());
-        int startY = 50 + r.nextInt((int) Gdx.graphics.getHeight() - 50);
-        int size = 20 + r.nextInt(10);
-        int vx = velXAsteroides + r.nextInt(2);
-        int vy = velYAsteroides + r.nextInt(2);
+	    Random r = new Random();
 
-        int pick = r.nextInt(3); // elige tipo de movimiento
-        MovementStrategy strategy;
-        Texture textura;
 
-        switch (pick) {
-            case 0:
-                strategy = new ErraticDirectionMovement(1, 4);
-                textura = new Texture(Gdx.files.internal("meteoro_erratico.png"));
-                break;
-            case 1:
-                strategy = new SpeedOscillatingMovement(0.9f, 0.3f);
-                textura = new Texture(Gdx.files.internal("meteoro_oscila.png"));
-                break;
-            default:
-                float radius = 40 + r.nextInt(60);
-                float angSpeed = r.nextBoolean() ? 2.5f : -2.5f;
-                strategy = new CircularMovement(startX, startY, radius, angSpeed);
-                textura = new Texture(Gdx.files.internal("meteoro_circular.png"));
-                vx = 0; vy = 0;
-                break;
-        }
+	    final float P_DEFAULT   = 0.70f;
+	    final float P_ERRATIC   = 0.15f;
+	    final float P_OSCILATE  = 0.10f;
+	    // P_CIRCULAR = 1 - (anteriores) = 0.05
 
-        Ball2 bb = new Ball2(
-            startX,
-            startY,
-            size,
-            vx, vy,
-            textura,
-            strategy
-        );
+	    for (int i = 0; i < cantAsteroides; i++) {
+	        int startX = r.nextInt((int) Gdx.graphics.getWidth());
+	        int startY = 50 + r.nextInt((int) Gdx.graphics.getHeight() - 50);
+	        int size   = 20 + r.nextInt(10);
+	        int vx     = velXAsteroides + r.nextInt(2);
+	        int vy     = velYAsteroides + r.nextInt(2);
 
-        balls1.add(bb);
-        balls2.add(bb);
-    }
-}
+	        float roll = r.nextFloat();
+	        int pick;
+	        if (roll < P_DEFAULT) {
+	            pick = 3;           // default (rebote)
+	        } else if (roll < P_DEFAULT + P_ERRATIC) {
+	            pick = 0;           // errático
+	        } else if (roll < P_DEFAULT + P_ERRATIC + P_OSCILATE) {
+	            pick = 1;           // oscilante
+	        } else {
+	            pick = 2;           // circular
+	        }
+
+	        MovementStrategy strategy;
+	        Texture textura;
+	        float ancho = 40, alto = 40; 
+
+	        switch (pick) {
+	            case 0: // Errático
+	                strategy = new MovimientoErratico(1, 4);
+	                textura  = new Texture(Gdx.files.internal("meteoro_erratico.png"));
+	                ancho = 60; alto = 60;
+	                break;
+
+	            case 1: // Oscilante
+	                strategy = new MovimientoVelocidadCambiante(1.0f, 0.7f, 1.2f, 12);
+	                textura  = new Texture(Gdx.files.internal("meteoro_oscila.png"));
+	                ancho = 60; alto = 60;
+	                break;
+
+	            case 2: // Circular
+	                float radius   = 40 + r.nextInt(60);
+	                float angSpeed = r.nextBoolean() ? 2.5f : -2.5f;
+	                strategy = new MovimientoCircular(startX, startY, radius, angSpeed);
+	                textura  = new Texture(Gdx.files.internal("meteoro_circular.png"));
+	                ancho = 60; alto = 60;
+	                vx = 0; vy = 0;
+	                break;
+
+	            default: // DEFAULT (rebote clásico): 3 tamaños distintos
+	                strategy = new MovimientoDefault();
+	                String[] opciones = { "aGreySmall.png", "aGreyMedium4.png", "aGreyLarge.png" };
+	                String archivo = opciones[r.nextInt(opciones.length)];
+	                textura = new Texture(Gdx.files.internal(archivo));
+
+
+	                if (archivo.contains("Small"))  { ancho = 60; alto = 60; }
+	                if (archivo.contains("Medium")) { ancho = 80; alto = 80; }
+	                if (archivo.contains("Large"))  { ancho = 120; alto = 120; }
+	                break;
+	        }
+
+
+	        Ball2 bb = new Ball2(startX, startY, size, vx, vy, textura, strategy);
+
+	        bb.getSprite().setSize(ancho, alto);
+
+	        balls1.add(bb);
+	        balls2.add(bb);
+	    }
+	}
 }
