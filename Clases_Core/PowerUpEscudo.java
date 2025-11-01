@@ -11,8 +11,8 @@ public class PowerUpEscudo extends PowerUp {
     public void aplicarEfecto(Object jugador) {
         if (jugador instanceof Nave4) {
             Nave4 nave = (Nave4) jugador;
-            nave.desactivarEscudo();      
-            nave.activarEscudo();         
+            nave.restaurarModelo(); 
+            nave.activarEscudo();
             desactivar();
         }
     }
