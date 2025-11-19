@@ -6,24 +6,19 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.audio.Music;
 
 public class PantallaMenu implements Screen {
 
 	private SpaceNavigation game;
 	private OrthographicCamera camera;
-	private Music musicaMenu;
+
 
 	public PantallaMenu(SpaceNavigation game) {
 		this.game = game;
         
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1200, 800);
-		musicaMenu = Gdx.audio.newMusic(Gdx.files.internal("cancionMenu.wav")); //
-		
-		musicaMenu.setLooping(true);
-		musicaMenu.setVolume(0.5f);
-		musicaMenu.play();
+		SoundManagement.getInstance().playMenuMusic();
 		
 	}
 
@@ -81,12 +76,10 @@ public class PantallaMenu implements Screen {
 		// TODO Auto-generated method stub
 		
 	}
+	
+    @Override
+    public void dispose() {
+    }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		this.musicaMenu.dispose();
-		
-	}
    
 }
