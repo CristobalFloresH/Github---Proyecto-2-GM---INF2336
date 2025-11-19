@@ -29,6 +29,7 @@ public class SpaceNavigation extends Game {
 	public void dispose() {
 		batch.dispose();
 		font.dispose();
+		SoundManagement.getInstance().dispose();
 	}
 
 	public SpriteBatch getBatch() {
