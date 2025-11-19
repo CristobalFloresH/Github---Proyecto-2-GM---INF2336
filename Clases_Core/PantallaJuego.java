@@ -5,7 +5,6 @@ import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -20,7 +19,6 @@ public class PantallaJuego implements Screen {
 	private OrthographicCamera camera;	
 	private SpriteBatch batch;
 	private Sound explosionSound;
-	private Music gameMusic;
 	private int score;
 	private int ronda;
 	private int velXAsteroides; 
@@ -64,11 +62,9 @@ public class PantallaJuego implements Screen {
 		fondo = new Texture(Gdx.files.internal("fondo.png"));
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1,0.5f);
-		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("cancionJuego.wav")); //
-		
-		gameMusic.setLooping(true);
-		gameMusic.setVolume(0.5f);
-		gameMusic.play();
+
+		SoundManagement.getInstance().playGameMusic();
+
 		
  
 	    nave = new Nave4(Gdx.graphics.getWidth()/2-50,30,new Texture(Gdx.files.internal("MainShip3.png")),
@@ -108,7 +104,7 @@ public class PantallaJuego implements Screen {
 		            b.update();
 		            for (int j = 0; j < balls1.size(); j++) {    
 		              if (b.checkCollision(balls1.get(j))) {          
-		            	 explosionSound.play(0.1f);
+		            	 SoundManagement.getInstance().playExplosion();
 		            	 balls1.remove(j);
 		            	 balls2.remove(j);
 		            	 j--;
@@ -234,12 +230,11 @@ public class PantallaJuego implements Screen {
     public boolean agregarBala(Bullet bb) {
     	return balas.add(bb);
     }
-	
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-		gameMusic.play();
-	}
+    
+    @Override
+    public void show() {
+        SoundManagement.getInstance().playGameMusic();
+    }
 
 	@Override
 	public void resize(int width, int height) {
@@ -267,9 +262,7 @@ public class PantallaJuego implements Screen {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		this.explosionSound.dispose();
-		this.gameMusic.dispose();
+	    this.explosionSound.dispose();
 	}
 	
 	private void spawnNuevoPowerUp() {
