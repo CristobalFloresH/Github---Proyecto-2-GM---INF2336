@@ -18,8 +18,6 @@ public class Nave4 {
     private float yVel = 0;
     private float rotationDeg = 0f;
     private Sprite spr;
-    private Sound sonidoHerido;
-    private Sound soundBala;
     private Texture txBala;
     private boolean herido = false;
     private int tiempoHeridoMax=50;
@@ -33,8 +31,6 @@ public class Nave4 {
     private float velocidadBase = 2f;
     
     public Nave4(int x, int y, Texture tx, Sound soundChoque, Texture txBala, Sound soundBala) {
-    	sonidoHerido = soundChoque;
-    	this.soundBala = soundBala;
     	this.txBala = txBala;
     	spr = new Sprite(tx);
     	spr.setPosition(x, y);
@@ -96,7 +92,7 @@ public class Nave4 {
                 juego.agregarBala(bala);
             }
 
-            soundBala.play();
+            SoundManagement.getInstance().playShoot();
          }
 
      }
@@ -149,7 +145,7 @@ public class Nave4 {
             vidas--;
             herido = true;
             tiempoHerido = tiempoHeridoMax;
-            sonidoHerido.play();
+            SoundManagement.getInstance().playHurt();
 
             if (vidas <= 0) destruida = true;
             return true;
