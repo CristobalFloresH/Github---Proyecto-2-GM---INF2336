@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 
@@ -11,12 +12,15 @@ public class PantallaGameOver implements Screen {
 
 	private SpaceNavigation game;
 	private OrthographicCamera camera;
+	private Texture gameOverImage;
 
 	public PantallaGameOver(SpaceNavigation game) {
 		this.game = game;
-        
+		gameOverImage = new Texture(Gdx.files.internal("GamerOverScreen.png"));
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1200, 800);
+		
+		SoundManagement.getInstance().stopAllMusic();
 	}
 
 	@Override
@@ -25,11 +29,8 @@ public class PantallaGameOver implements Screen {
 
 		camera.update();
 		game.getBatch().setProjectionMatrix(camera.combined);
-
 		game.getBatch().begin();
-		game.getFont().draw(game.getBatch(), "Game Over !!! ", 120, 400,400,1,true);
-		game.getFont().draw(game.getBatch(), "Pincha en cualquier lado para reiniciar ...", 100, 300);
-	
+		game.getBatch().draw( gameOverImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		game.getBatch().end();
 
 		if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
