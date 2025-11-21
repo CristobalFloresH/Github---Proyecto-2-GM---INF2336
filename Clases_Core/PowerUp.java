@@ -56,47 +56,29 @@ public abstract class PowerUp {
         return hitbox;
     }
 
-    
     public final void aplicar(Object jugador) {
-        if (!esJugadorValido(jugador)) return;
+        if (!(jugador instanceof Nave4)) return;
 
         Nave4 nave = (Nave4) jugador;
 
-        prepararAplicacion(nave);
+        nave.restaurarModelo();
         aplicarEfecto(nave);
-        aplicarCambioVisual(nave);
-        aplicarCambiosNumericos(nave);
-        finalizarAplicacion(nave);
 
+        String nuevoModelo = getModeloNave();
+        if (nuevoModelo != null) {
+            nave.cambiarModelo(nuevoModelo);
+        }
+
+        modificarValoresNave(nave);
         desactivar();
-    }
-
-    
-    protected boolean esJugadorValido(Object jugador) {
-        return jugador instanceof Nave4;
-    }
-
-    protected void prepararAplicacion(Nave4 nave) {
     }
 
     protected abstract void aplicarEfecto(Nave4 nave);
 
-    protected void aplicarCambioVisual(Nave4 nave) {
-        String modelo = obtenerModeloNave();
-        if (modelo != null) {
-            nave.cambiarModelo(modelo);
-        }
-    }
-
-    protected String obtenerModeloNave() {
+    protected String getModeloNave() {
         return null;
     }
 
-    protected void aplicarCambiosNumericos(Nave4 nave) {
+    protected void modificarValoresNave(Nave4 nave) {
     }
-
-    protected void finalizarAplicacion(Nave4 nave) {
-    }
-
-    public abstract String getDescripcion();
 }
