@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class PowerUp {
-
     protected Vector2 posicion;
     protected Texture textura;
     protected Rectangle hitbox;
@@ -17,10 +16,8 @@ public abstract class PowerUp {
 
     public PowerUp(String rutaTextura) {
         textura = new Texture(rutaTextura);
-
         float posX = MathUtils.random(0, Gdx.graphics.getWidth() - textura.getWidth());
         float posY = Gdx.graphics.getHeight();
-
         posicion = new Vector2(posX, posY);
         hitbox = new Rectangle(posX, posY, 32, 32);
         activo = true;
@@ -29,10 +26,8 @@ public abstract class PowerUp {
 
     public void update() {
         if (!activo) return;
-
         posicion.y -= velocidadY;
         hitbox.setPosition(posicion.x, posicion.y);
-
         if (posicion.y + hitbox.getHeight() < 0) {
             activo = false;
         }
@@ -56,30 +51,35 @@ public abstract class PowerUp {
         return hitbox;
     }
 
-    public void aplicarEfecto(Object jugador) {
+    public final void aplicarEfecto(Object jugador) {
         if (!(jugador instanceof Nave4)) return;
-
+        
         Nave4 nave = (Nave4) jugador;
+        
+        prepararNave(nave);
+        
+        aplicarEfectoEspecifico(nave);
+        
+        String nuevoModelo = obtenerModeloNave();
+        if (nuevoModelo != null) {
+            nave.cambiarModelo(nuevoModelo);
+        }
+        
+        modificarValoresNave(nave);
+        
+        desactivar();
+    }
 
+    protected void prepararNave(Nave4 nave) {
         nave.restaurarTripleDisparto();
         nave.restaurarVelocidad();
         nave.desactivarEscudo();
         nave.restaurarModelo();
-
-        aplicarEfecto(nave);
-
-        String nuevoModelo = getModeloNave();
-        if (nuevoModelo != null) {
-            nave.cambiarModelo(nuevoModelo);
-        }
-
-        modificarValoresNave(nave);
-        desactivar();
     }
 
-    //protected abstract void aplicarEfecto(Nave4 nave);
+    protected abstract void aplicarEfectoEspecifico(Nave4 nave);
 
-    protected String getModeloNave() {
+    protected String obtenerModeloNave() {
         return null;
     }
 
