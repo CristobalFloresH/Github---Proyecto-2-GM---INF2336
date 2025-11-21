@@ -56,7 +56,7 @@ public abstract class PowerUp {
         return hitbox;
     }
 
-    public final void aplicar(Object jugador) {
+    public void aplicarEfecto(Object jugador) {
         if (!(jugador instanceof Nave4)) return;
 
         Nave4 nave = (Nave4) jugador;
@@ -77,7 +77,7 @@ public abstract class PowerUp {
         desactivar();
     }
 
-    protected abstract void aplicarEfecto(Nave4 nave);
+    //protected abstract void aplicarEfecto(Nave4 nave);
 
     protected String getModeloNave() {
         return null;
