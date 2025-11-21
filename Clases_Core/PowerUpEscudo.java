@@ -1,5 +1,4 @@
 package puppy.code;
-import com.badlogic.gdx.math.Rectangle;
 
 public class PowerUpEscudo extends PowerUp {
 
@@ -8,16 +7,12 @@ public class PowerUpEscudo extends PowerUp {
     }
 
     @Override
-    public void aplicarEfecto(Object jugador) {
-        if (jugador instanceof Nave4) {
-            Nave4 nave = (Nave4) jugador;
-            nave.restaurarModelo(); 
-            nave.activarEscudo();
-            desactivar();
-        }
+    protected void aplicarEfecto(Nave4 nave) {
+        nave.activarEscudo();
     }
 
-    public Rectangle getHitbox() {
-        return hitbox;
+    @Override
+    protected String getModeloNave() {
+        return null;
     }
 }
