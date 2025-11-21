@@ -79,6 +79,4 @@ public abstract class PowerUp {
         return null;
     }
 
-    protected void modificarValoresNave(Nave4 nave) {
-    }
 }
