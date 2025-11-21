@@ -61,7 +61,11 @@ public abstract class PowerUp {
 
         Nave4 nave = (Nave4) jugador;
 
+        nave.restaurarTripleDisparto();
+        nave.restaurarVelocidad();
+        nave.desactivarEscudo();
         nave.restaurarModelo();
+
         aplicarEfecto(nave);
 
         String nuevoModelo = getModeloNave();
