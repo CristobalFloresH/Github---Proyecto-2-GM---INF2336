@@ -8,11 +8,15 @@ public class PowerUpSpeed extends PowerUp {
 
     @Override
     protected void aplicarEfecto(Nave4 nave) {
-        nave.aumentarVelocidad();
     }
 
     @Override
     protected String getModeloNave() {
         return "NaveVelocidad.png";
+    }
+
+    @Override
+    protected void modificarValoresNave(Nave4 nave) {
+        nave.aumentarVelocidad();
     }
 }
