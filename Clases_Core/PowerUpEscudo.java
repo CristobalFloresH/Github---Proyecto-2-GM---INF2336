@@ -8,7 +8,7 @@ public class PowerUpEscudo extends PowerUp {
 
     @Override
     protected void prepararAplicacion(Nave4 nave) {
-        // Por ejemplo, reproducir sonido o efecto de partículas
+        // por si le agregaramos un reproducir sonido o efecto de partículas
     }
 
     @Override
